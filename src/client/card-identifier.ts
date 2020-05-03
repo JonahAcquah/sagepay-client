@@ -1,3 +1,5 @@
+import { SavedCardIdentifierOutput } from './payment-transaction'
+
 export type CardIdentifierOutput = {
     cardIdentifier: string;
     cardType: string;
@@ -13,5 +15,5 @@ export type CardDetails = {
 }
 
 export type CardIdentifierInput = {
-    cardDetails: CardDetails | CardIdentifierOutput;
+    cardDetails: CardDetails | SavedCardIdentifierOutput;
 }

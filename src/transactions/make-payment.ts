@@ -1,5 +1,5 @@
 import { CardIdentifierOutput, CardIdentifierInput, CardDetails } from '../client/card-identifier'
-import { PaymentTransactionOutput, PaymentTransactionInput } from '../client/payment-transaction'
+import { PaymentTransactionOutput, PaymentTransactionInput, SavedCardIdentifierOutput } from '../client/payment-transaction'
 import { ThreeDSecureOutput } from '../client/three-d-secure-output'
 import { ConfigOptions } from '../client/configOptions'
 
@@ -9,9 +9,9 @@ export const makePayment = (opt: ConfigOptions, getCardIdentifier: (cardIdentifi
         const uri = opt.baseUrl + 'api/v1/transactions'
 
         let card
-        if((paymentTransactionInput.card.cardDetails as CardIdentifierOutput).merchantSessionKey) {
+        if((paymentTransactionInput.card.cardDetails as SavedCardIdentifierOutput).merchantSessionKey) {
             // Reusing cardidentifier
-            const cardDetails = (paymentTransactionInput.card.cardDetails as CardIdentifierOutput)
+            const cardDetails = (paymentTransactionInput.card.cardDetails as SavedCardIdentifierOutput)
             card = {
                 merchantSessionKey: cardDetails.merchantSessionKey,
                 cardIdentifier: cardDetails.cardIdentifier,
