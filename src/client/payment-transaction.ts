@@ -17,8 +17,8 @@ export type AvsCvsCheck = {
 export type SavedCardIdentifierOutput = {
     merchantSessionKey: string;
     cardIdentifier: string;
-    reusable: boolean;
-    save: boolean;
+    save?: boolean;
+    reusable?: boolean;
 }
 
 export type TransactionAmount = {

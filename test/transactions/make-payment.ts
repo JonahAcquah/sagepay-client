@@ -265,7 +265,7 @@ describe('default - Reuse Card', () => {
                 cardDetails: {
                     merchantSessionKey: 'test-session-key-used',
                     cardIdentifier: 'test-card-identifier',
-                    cardType: 'test-card-type'
+                    save: true
                 }
         }
 
@@ -396,7 +396,7 @@ describe('default - Reuse Card', () => {
             cardDetails: {
                 merchantSessionKey: 'test-session-key-used',
                 cardIdentifier: 'test-card-identifier',
-                cardType: 'test-card-type'
+                save: true
             }
         }
 
