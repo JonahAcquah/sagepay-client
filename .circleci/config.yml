@@ -41,7 +41,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
-  deploy:
+  publishToNpm:
     executor: mainexec
     working_directory: ~/repo
     steps:
@@ -54,8 +54,16 @@ workflows:
     jobs:
       - build-test
       - deploy:
+          type: approval
           requires:
             - build-test
           filters:
             branches:
               only: master
+      - publishToNpm:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only: master
+          
