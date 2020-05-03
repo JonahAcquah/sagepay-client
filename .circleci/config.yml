@@ -1,0 +1,61 @@
+version: 2.1
+
+executors:
+  mainexec:
+    docker:
+      - image: circleci/node:12.16.0
+
+commands:
+  install:
+    steps:
+      - run: npm ci
+  test:
+    steps:
+      - run: npm run test
+  build:
+    steps:
+      - run: npm run build
+  publish:
+    steps:
+      - run:
+          name: Authenricate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run: npm publish
+jobs:
+  build-test:
+    executor: mainexec
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      - install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      - build
+      - test
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+  deploy:
+    executor: mainexec
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - publish    
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - build-test
+      - deploy:
+          requires:
+            - build-test
+          filters:
+            branches:
+              only: master
