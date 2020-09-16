@@ -1,4 +1,5 @@
 import { HttpClient } from '../utils/http-client'
+import { Logger } from '../utils/logger'
 
 export interface ConfigOptions extends SagePayOptions {
     httpClient: HttpClient;
@@ -12,6 +13,7 @@ export interface SagePayOptions {
     password: string;
     vendorName: string;
     httpClient?: HttpClient;
+    logger?: Logger;
     maxRetries?: number;
     headers?: { [key: string]: string };
 }

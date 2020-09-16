@@ -29,7 +29,7 @@ export class SagePayClient {
 
         const opt = {
             ...this.options,
-            httpClient: this.options.httpClient || new HttpClient(),
+            httpClient: this.options.httpClient || new HttpClient(this.options.logger),
             headers: this.options.headers || {
                 'content-type': 'application/json'
             }
