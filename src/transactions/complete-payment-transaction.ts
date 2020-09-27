@@ -42,7 +42,9 @@ export const completePayment = (opt: ConfigOptions) =>
                 headers
             }
             
-            return opt.httpClient.execute(params, (response) => ({ ...response }))
+            return opt.httpClient.execute<PaymentTransactionOutput>(params, (response: string) => {
+                return JSON.parse(response) as PaymentTransactionOutput
+            })
         }
 
         throw new Error(verify3DSecureTransactionResponse.status)
