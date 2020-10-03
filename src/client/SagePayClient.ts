@@ -8,17 +8,19 @@ import { ThreeDSecureOutput } from './three-d-secure-output'
 import { 
     PaymentTransactionOutput, 
     PaymentTransactionInput, 
-    CompletePaymentTransactionInput as CompleteTransactionInput 
+    CompletePaymentTransactionInput as CompleteTransactionInput, SavedCardIdentifierOutput 
 } from './payment-transaction'
 import { HttpClient } from '../utils/http-client'
 import { MerchantSessionKeyOutput } from './merchant-sessionkey'
 import { CardIdentifierInput, CardIdentifierOutput } from './card-identifier'
 import { RefundTransactionInput } from './refund-transaction'
+import { linkCardIdentifier } from '../transactions/link-card-identifier'
 
 export class SagePayClient {
 
     private readonly createMerchantSessionKey: () => Promise<MerchantSessionKeyOutput>
     private readonly createCardIdentifier: (cardIdentifierInput: CardIdentifierInput) => Promise<CardIdentifierOutput>
+    private readonly createLinkCardIdentifier: (savedCardIdentifierOutput: SavedCardIdentifierOutput) => Promise<string>
 
     public createPaymentTransaction: (paymentTransactionInput: PaymentTransactionInput) => Promise<PaymentTransactionOutput | ThreeDSecureOutput> 
     public completePaymentTransaction: (completeTransactionInput: CompleteTransactionInput) => Promise<PaymentTransactionOutput>
@@ -37,7 +39,8 @@ export class SagePayClient {
 
         this.createMerchantSessionKey = merchantSessionKey(opt)
         this.createCardIdentifier = cardIdentifier(opt, this.createMerchantSessionKey)
-        this.createPaymentTransaction = makePayment(opt, this.createCardIdentifier)
+        this.createLinkCardIdentifier = linkCardIdentifier(opt, this.createMerchantSessionKey)
+        this.createPaymentTransaction = makePayment(opt, this.createCardIdentifier, this.createLinkCardIdentifier)
         this.completePaymentTransaction = completePayment(opt)
         this.createRefundTransaction = refundPayment(opt)
     }

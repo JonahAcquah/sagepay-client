@@ -3,17 +3,22 @@ import { PaymentTransactionOutput, PaymentTransactionInput, SavedCardIdentifierO
 import { ThreeDSecureOutput } from '../client/three-d-secure-output'
 import { ConfigOptions } from '../client/configOptions'
 
-export const makePayment = (opt: ConfigOptions, getCardIdentifier: (cardIdentifierInput: CardIdentifierInput) => Promise<CardIdentifierOutput>) => 
+export const makePayment = (
+    opt: ConfigOptions, 
+    getCardIdentifier: (cardIdentifierInput: CardIdentifierInput) => Promise<CardIdentifierOutput>,
+    linkCardIdentifier: (savedCardIdentifierOutput: SavedCardIdentifierOutput) => Promise<string>
+) => 
     async (paymentTransactionInput: PaymentTransactionInput): Promise<PaymentTransactionOutput | ThreeDSecureOutput> => {
         const method = 'POST'
         const uri = opt.baseUrl + 'api/v1/transactions'
 
         let card
-        if((paymentTransactionInput.card.cardDetails as SavedCardIdentifierOutput).merchantSessionKey) {
+        const cardDetails = paymentTransactionInput.card.cardDetails as SavedCardIdentifierOutput
+        if(cardDetails?.cardIdentifier) {
             // Reusing cardidentifier
-            const cardDetails = (paymentTransactionInput.card.cardDetails as SavedCardIdentifierOutput)
+            const merchantSessionKey = await linkCardIdentifier(cardDetails)
             card = {
-                merchantSessionKey: cardDetails.merchantSessionKey,
+                merchantSessionKey,
                 cardIdentifier: cardDetails.cardIdentifier,
                 save: true
             }

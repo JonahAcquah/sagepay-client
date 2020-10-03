@@ -16,13 +16,13 @@ describe('default - New Card', () => {
     `, async () => {
         const expectedCardIdentierResponse = {
             cardIdentifier: 'test-card-identifier',
-            expiry: new Date(),
-            cardType: '12/22',
+            expiry: '12/22',
+            cardType: 'visa',
             merchantSessionKey: 'test-session-key-used'
         }
 
         const cardInput = {
-                cardDetails: {
+            cardDetails: {
                 cardNumber: '1234 5678 9101 2345',
                 cardholderName: 'test-card holder-name',
                 securityCode: '123',
@@ -68,40 +68,41 @@ describe('default - New Card', () => {
         }
 
         const paymentOutput = {
-            "transactionId": "DB79BA2D-05DA-5B85-D188-1293D16BBAC7",
-            "transactionType": "Payment",
-            "status": "Ok",
-            "statusCode": 0,
-            "statusDetail": "The Authorisation was Successful.",
-            "retrievalReference": 9493946,
-            "bankResponseCode": 0,
-            "bankAuthorisationCode": 999777,
-            "avsCvsCheck": 
+            'transactionId': 'DB79BA2D-05DA-5B85-D188-1293D16BBAC7',
+            'transactionType': 'Payment',
+            'status': 'Ok',
+            'statusCode': 0,
+            'statusDetail': 'The Authorisation was Successful.',
+            'retrievalReference': 9493946,
+            'bankResponseCode': 0,
+            'bankAuthorisationCode': 999777,
+            'avsCvsCheck': 
             {
-                "status": "AllMatched",
-                "address": "Matched",
-                "postalCode": "Matched",
-                "securityCode": "Matched"
+                'status': 'AllMatched',
+                'address': 'Matched',
+                'postalCode': 'Matched',
+                'securityCode': 'Matched'
 
             },
-            "paymentMethod": 
+            'paymentMethod': 
             {
-                "card": {
-                    "merchantSessionKey": 'test-merchant-session-key',
-                    "cardIdentifier": 'card-identifier',
-                    "reusable": true,
-                    "save": true
+                'card': {
+                    'cardType': 'visa',
+                    'cardIdentifier': 'card-identifier',
+                    'expiryDate': '12/22',
+                    'lastFourtDigits': '0004',
+                    'reusable': true,
                 }
             },
-            "amount": {
-                "totalAmount": 567,
-                "saleAmount": 897,
-                "surchargeAmount": 234
+            'amount': {
+                'totalAmount': 567,
+                'saleAmount': 897,
+                'surchargeAmount': 234
             },
-            "currency": "GBP",
-            "3DSecure": 
+            'currency': 'GBP',
+            '3DSecure': 
             {
-                "status": "Authenticated"
+                'status': 'Authenticated'
             }
         }
 
@@ -121,14 +122,16 @@ describe('default - New Card', () => {
             }
         } as any as ConfigOptions
 
-        const base64Creds = Buffer.from(`test-user-name:test-password`).toString('base64')
+        const base64Creds = Buffer.from('test-user-name:test-password').toString('base64')
         const headers = {
             ...opt.headers,
             Authorization: `Basic ${base64Creds}`
         }
 
         const cardIdentifierFn = () => Promise.resolve(expectedCardIdentierResponse)
-        const f = makePayment(opt, cardIdentifierFn)
+        const linkCardIdentifierFn = () => Promise.resolve('test-session-key-used')
+
+        const f = makePayment(opt, cardIdentifierFn, linkCardIdentifierFn)
         const sessionKey = await f(payment)
         
         expect(sessionKey).toEqual(paymentOutput)
@@ -202,11 +205,11 @@ describe('default - New Card', () => {
 
         const payment3DSecureOutput = {
             statusCode: 2021,
-            statusDetail: "Please redirect your customer to the ACSURL to complete the 3DS Transaction",
-            transactionId: "DB79BA2D-05DA-5B85-D188-1293D16BBAC7",
-            acsUrl: "https://url-to-be-confirmed/html_challenge",
-            cReq: "eyJtZXNzYWdlVHlwZSI6IkNSZXEiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMS4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiIwZDUzZjA2Ni1jMDc2LTRkOGItYjcyMi04ZThhOWE0ZWE1NTIiLCJhY3NUcmFuc0lEIjoiMjdiNDlkMTgtMmE4Yi00OGIxLWE4ZTYtNzU3MzlkNmMwNDRiIiwiY2hhbGxlbmdlV2luZG93U2l6ZSI6IjAxIn0",
-            status: "3DAuth"
+            statusDetail: 'Please redirect your customer to the ACSURL to complete the 3DS Transaction',
+            transactionId: 'DB79BA2D-05DA-5B85-D188-1293D16BBAC7',
+            acsUrl: 'https://url-to-be-confirmed/html_challenge',
+            cReq: 'eyJtZXNzYWdlVHlwZSI6IkNSZXEiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMS4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiIwZDUzZjA2Ni1jMDc2LTRkOGItYjcyMi04ZThhOWE0ZWE1NTIiLCJhY3NUcmFuc0lEIjoiMjdiNDlkMTgtMmE4Yi00OGIxLWE4ZTYtNzU3MzlkNmMwNDRiIiwiY2hhbGxlbmdlV2luZG93U2l6ZSI6IjAxIn0',
+            status: '3DAuth'
         }
 
         const payment = {
@@ -225,14 +228,16 @@ describe('default - New Card', () => {
             }
         } as any as ConfigOptions
 
-        const base64Creds = Buffer.from(`test-user-name:test-password`).toString('base64')
+        const base64Creds = Buffer.from('test-user-name:test-password').toString('base64')
         const headers = {
             ...opt.headers,
             Authorization: `Basic ${base64Creds}`
         }
 
         const cardIdentifierFn = () => Promise.resolve(expectedCardIdentierResponse)
-        const f = makePayment(opt, cardIdentifierFn)
+        const linkCardIdentifierFn = () => Promise.resolve('test-session-key-used')
+
+        const f = makePayment(opt, cardIdentifierFn, linkCardIdentifierFn)
         const sessionKey = await f(payment)
         
         expect(sessionKey).toEqual(payment3DSecureOutput)
@@ -262,11 +267,10 @@ describe('default - Reuse Card', () => {
         }
 
         const cardInput = {
-                cardDetails: {
-                    merchantSessionKey: 'test-session-key-used',
-                    cardIdentifier: 'test-card-identifier',
-                    save: true
-                }
+            cardDetails: {
+                cardIdentifier: 'test-card-identifier',
+                securityCode: 'test-security-code'
+            }
         }
 
         const paymentInput = {
@@ -306,40 +310,40 @@ describe('default - Reuse Card', () => {
         }
 
         const paymentOutput = {
-            "transactionId": "DB79BA2D-05DA-5B85-D188-1293D16BBAC7",
-            "transactionType": "Payment",
-            "status": "Ok",
-            "statusCode": 0,
-            "statusDetail": "The Authorisation was Successful.",
-            "retrievalReference": 9493946,
-            "bankResponseCode": 0,
-            "bankAuthorisationCode": 999777,
-            "avsCvsCheck": 
+            'transactionId': 'DB79BA2D-05DA-5B85-D188-1293D16BBAC7',
+            'transactionType': 'Payment',
+            'status': 'Ok',
+            'statusCode': 0,
+            'statusDetail': 'The Authorisation was Successful.',
+            'retrievalReference': 9493946,
+            'bankResponseCode': 0,
+            'bankAuthorisationCode': 999777,
+            'avsCvsCheck': 
             {
-                "status": "AllMatched",
-                "address": "Matched",
-                "postalCode": "Matched",
-                "securityCode": "Matched"
+                'status': 'AllMatched',
+                'address': 'Matched',
+                'postalCode': 'Matched',
+                'securityCode': 'Matched'
 
             },
-            "paymentMethod": 
+            'paymentMethod': 
             {
-                "card": {
-                    "merchantSessionKey": 'test-merchant-session-key',
-                    "cardIdentifier": 'card-identifier',
-                    "reusable": true,
-                    "save": true
+                'card': {
+                    'merchantSessionKey': 'test-merchant-session-key',
+                    'cardIdentifier': 'card-identifier',
+                    'reusable': true,
+                    'save': true
                 }
             },
-            "amount": {
-                "totalAmount": 567,
-                "saleAmount": 897,
-                "surchargeAmount": 234
+            'amount': {
+                'totalAmount': 567,
+                'saleAmount': 897,
+                'surchargeAmount': 234
             },
-            "currency": "GBP",
-            "3DSecure": 
+            'currency': 'GBP',
+            '3DSecure': 
             {
-                "status": "Authenticated"
+                'status': 'Authenticated'
             }
         }
 
@@ -359,14 +363,16 @@ describe('default - Reuse Card', () => {
             }
         } as any as ConfigOptions
 
-        const base64Creds = Buffer.from(`test-user-name:test-password`).toString('base64')
+        const base64Creds = Buffer.from('test-user-name:test-password').toString('base64')
         const headers = {
             ...opt.headers,
             Authorization: `Basic ${base64Creds}`
         }
 
         const cardIdentifierFn = () => Promise.resolve(expectedCardIdentierResponse)
-        const f = makePayment(opt, cardIdentifierFn)
+        const linkCardIdentifierFn = () => Promise.resolve(expectedCardIdentierResponse.merchantSessionKey)
+
+        const f = makePayment(opt, cardIdentifierFn, linkCardIdentifierFn)
         const sessionKey = await f(payment)
         
         expect(sessionKey).toEqual(paymentOutput)
@@ -394,9 +400,8 @@ describe('default - Reuse Card', () => {
 
         const cardInput = {
             cardDetails: {
-                merchantSessionKey: 'test-session-key-used',
                 cardIdentifier: 'test-card-identifier',
-                save: true
+                securityCode: 'test-security-code'
             }
         }
 
@@ -438,11 +443,11 @@ describe('default - Reuse Card', () => {
 
         const payment3DSecureOutput = {
             statusCode: 2021,
-            statusDetail: "Please redirect your customer to the ACSURL to complete the 3DS Transaction",
-            transactionId: "DB79BA2D-05DA-5B85-D188-1293D16BBAC7",
-            acsUrl: "https://url-to-be-confirmed/html_challenge",
-            cReq: "eyJtZXNzYWdlVHlwZSI6IkNSZXEiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMS4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiIwZDUzZjA2Ni1jMDc2LTRkOGItYjcyMi04ZThhOWE0ZWE1NTIiLCJhY3NUcmFuc0lEIjoiMjdiNDlkMTgtMmE4Yi00OGIxLWE4ZTYtNzU3MzlkNmMwNDRiIiwiY2hhbGxlbmdlV2luZG93U2l6ZSI6IjAxIn0",
-            status: "3DAuth"
+            statusDetail: 'Please redirect your customer to the ACSURL to complete the 3DS Transaction',
+            transactionId: 'DB79BA2D-05DA-5B85-D188-1293D16BBAC7',
+            acsUrl: 'https://url-to-be-confirmed/html_challenge',
+            cReq: 'eyJtZXNzYWdlVHlwZSI6IkNSZXEiLCJtZXNzYWdlVmVyc2lvbiI6IjIuMS4wIiwidGhyZWVEU1NlcnZlclRyYW5zSUQiOiIwZDUzZjA2Ni1jMDc2LTRkOGItYjcyMi04ZThhOWE0ZWE1NTIiLCJhY3NUcmFuc0lEIjoiMjdiNDlkMTgtMmE4Yi00OGIxLWE4ZTYtNzU3MzlkNmMwNDRiIiwiY2hhbGxlbmdlV2luZG93U2l6ZSI6IjAxIn0',
+            status: '3DAuth'
         }
 
         const payment = {
@@ -461,14 +466,16 @@ describe('default - Reuse Card', () => {
             }
         } as any as ConfigOptions
 
-        const base64Creds = Buffer.from(`test-user-name:test-password`).toString('base64')
+        const base64Creds = Buffer.from('test-user-name:test-password').toString('base64')
         const headers = {
             ...opt.headers,
             Authorization: `Basic ${base64Creds}`
         }
 
         const cardIdentifierFn = () => Promise.resolve(expectedCardIdentierResponse)
-        const f = makePayment(opt, cardIdentifierFn)
+        const linkCardIdentifierFn = () => Promise.resolve(expectedCardIdentierResponse.merchantSessionKey)
+
+        const f = makePayment(opt, cardIdentifierFn, linkCardIdentifierFn)
         const sessionKey = await f(payment)
         
         expect(sessionKey).toEqual(payment3DSecureOutput)

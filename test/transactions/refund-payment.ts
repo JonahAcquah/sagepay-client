@@ -12,49 +12,49 @@ describe('default', () => {
         THEN a transaction payment confirmation is returned
     `, async () => {
         const paymentOutput = {
-            "transactionId": "DB79BA2D-05DA-5B85-D188-1293D16BBAC7",
-            "transactionType": "Payment",
-            "status": "Ok",
-            "statusCode": 0,
-            "statusDetail": "The Authorisation was Successful.",
-            "retrievalReference": 9493946,
-            "bankResponseCode": 0,
-            "bankAuthorisationCode": 999777,
-            "avsCvsCheck": 
+            'transactionId': 'DB79BA2D-05DA-5B85-D188-1293D16BBAC7',
+            'transactionType': 'Payment',
+            'status': 'Ok',
+            'statusCode': 0,
+            'statusDetail': 'The Authorisation was Successful.',
+            'retrievalReference': 9493946,
+            'bankResponseCode': 0,
+            'bankAuthorisationCode': 999777,
+            'avsCvsCheck': 
             {
-                "status": "AllMatched",
-                "address": "Matched",
-                "postalCode": "Matched",
-                "securityCode": "Matched"
+                'status': 'AllMatched',
+                'address': 'Matched',
+                'postalCode': 'Matched',
+                'securityCode': 'Matched'
 
             },
-            "paymentMethod": 
+            'paymentMethod': 
             {
-                "card": {
-                    "merchantSessionKey": 'test-merchant-session-key',
-                    "cardIdentifier": 'card-identifier',
-                    "reusable": false,
-                    "save": false
+                'card': {
+                    'merchantSessionKey': 'test-merchant-session-key',
+                    'cardIdentifier': 'card-identifier',
+                    'reusable': false,
+                    'save': false
                 }
             },
-            "amount": {
-                "totalAmount": 567,
-                "saleAmount": 897,
-                "surchargeAmount": 234
+            'amount': {
+                'totalAmount': 567,
+                'saleAmount': 897,
+                'surchargeAmount': 234
             },
-            "currency": "GBP",
-            "3DSecure": 
+            'currency': 'GBP',
+            '3DSecure': 
             {
-                "status": "Authenticated"
+                'status': 'Authenticated'
             }
         }
 
         const refundPaymentInput = {
-            "transactionType": "Refund",
-            "referenceTransactionId": "56A59178-EA46-5731-BBAF-B08415CCE499",
-            "vendorTxCode": "demotransaction99",
-            "amount": 4,
-            "description": "Demo transaction"
+            'transactionType': 'Refund',
+            'referenceTransactionId': '56A59178-EA46-5731-BBAF-B08415CCE499',
+            'vendorTxCode': 'demotransaction99',
+            'amount': 4,
+            'description': 'Demo transaction'
         }
 
         const opt = {
@@ -68,7 +68,7 @@ describe('default', () => {
             }
         } as any as ConfigOptions
 
-        const base64Creds = Buffer.from(`test-user-name:test-password`).toString('base64')
+        const base64Creds = Buffer.from('test-user-name:test-password').toString('base64')
         const headers = {
             ...opt.headers,
             Authorization: `Basic ${base64Creds}`
