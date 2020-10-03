@@ -25,7 +25,7 @@ export const linkCardIdentifier = (opt: ConfigOptions, getMerchantSessionKey: ()
             json: true
         }
         
-        opt.httpClient.execute(params, (response) => ({ ...response }))
+        await opt.httpClient.execute(params, (response) => ({ ...response }))
 
         return merchantSessionKeyResult.merchantSessionKey
     }
